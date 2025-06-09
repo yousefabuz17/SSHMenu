@@ -1,12 +1,38 @@
 #!/usr/bin/env bash
 
+#
+# SSHM - SSHMenu
+#
+# Description: Interactive SSH host selector that reads from ~/.ssh/config.
+# Version: 1.0.0
+# Author: Yousef Abuzahrieh
+# Last Updated: 2025-06-09
+# GitHub: https://github.com/yourusername/sshm
+# Requirements: bash 4+, ssh client, ~/.ssh/config file
+# Compatibility: macOS, Linux
+#
+# Notes:
+# - Not tested on Windows (contributions welcome)
+# - Easily extendable with aliasing or remote command execution
+
+
+SSHM_VERSION=1.0.0
+
+
 function check_machine(){
     OS_MACHINE="$(awk -F- '{gsub(/[0-9.]/, "", $1); print $1}' <<< "$OSTYPE")"
+    
     [[ $OS_MACHINE != 'darwin' && $OS_MACHINE != 'linux' ]] && 
-    {
-        echo "Error: Detected OS '$OS_MACHINE' - this script requires MacOS (darwin) or Linux"
+        {
+            echo "Error: Detected OS '$OS_MACHINE' - this script requires MacOS (darwin) or Linux"
+            exit 1
+        }
+
+    if ((BASH_VERSINFO[0] < 4)); then
+        echo "Error: This script requires Bash version 4.0 or higher." >&2
         exit 1
-    }
+    fi
+
     export OS_MACHINE
 }
 
@@ -27,6 +53,23 @@ function get_home(){
         linux) find_user /home ;;
     esac
 }
+
+
+function help_page() {
+    cat <<EOF
+Usage: sshm.sh [OPTIONS]
+
+Options:
+    -d, --display      Display contents of ~/.ssh/config
+    -v, --version      Show script version
+    -h, --help         Show this help message
+
+Example:
+    ./sshm.sh          # Launch interactive SSH menu
+    ./sshm.sh -d       # Show raw SSH config file
+EOF
+}
+
 
 
 
@@ -106,8 +149,10 @@ function parse_arguments(){
         if [[ -n $arg && $arg = -* ]]; then
             case $arg in
                 -d|--display) view_ssh_cf ;;
+                -v|--version) echo "$SSHM_VERSION" ;;
+                -h|--help) help_page ;;
                 *)
-                    echo "'($arg)' is an invalid argument." >&2
+                    echo "'($arg)' is an invalid argument. Please use flag (-h|--help) for further assistance." >&2
                     exit 1
                     ;;
             esac
@@ -117,7 +162,7 @@ function parse_arguments(){
 
 
 sshMenu(){
-    trap 'echo -e "\nSSHManager Terminated."; exit 1' SIGINT
+    trap 'echo -e "\nSSHManager Terminated."; exit 0' SIGINT
     
     local PS3=$"Server #: "
 
