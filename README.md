@@ -43,7 +43,7 @@ A standalone Bash script providing an interactive SSH menu for connecting to hos
 1. Clone this repository or download the script:
 
    ```bash
-   git clone https://github.com/yourusername/sshm.git
+   git clone https://github.com/yousefabuz17/SSHMenu.git
    cd sshm
    ```
 
