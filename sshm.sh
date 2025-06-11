@@ -7,7 +7,7 @@
 # Version: 1.0.0
 # Author: Yousef Abuzahrieh
 # GitHub: https://github.com/yousefabuz17/SSHMenu.git
-# Requirements: bash 4+, ssh client, ~/.ssh/config file | /etc/ssh/ssh_config
+# Requirements: bash 4+, ssh client, ~/.ssh/config | /etc/ssh/ssh_config
 # Compatibility: macOS, Linux
 #
 # Notes:
@@ -248,12 +248,11 @@ sshMenu(){
     local PS3=$"Server #: "
     local server
     local -i server_num
-    local -i num_hosts="${#KNOWN_HOSTS[@]}"
 
     check_ssh
     parse_config
 
-    echo -e "\nSelect a server to SSH into (1-$num_hosts):\n"
+    echo -e "\nSelect a server to SSH into:\n"
     
     select server in "${!KNOWN_HOSTS[@]}"
     do
